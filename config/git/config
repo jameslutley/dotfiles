@@ -1,0 +1,60 @@
+[user]
+  name = James Lutley
+  email = james@jameslutley.com
+[core]
+  editor = vim
+  whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+  excludesfile = /Users/jameslutley/.gitignore
+[web]
+  browser = google-chrome
+[github]
+  user = jameslutley
+[alias]
+  co   = checkout
+  ci   = commit
+  st   = status
+  br   = branch -av
+  d    = diff
+  dc   = diff --cached
+  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  type = cat-file -t
+  dump = cat-file -p
+
+  fo   = fetch origin
+  mod  = merge origin/develop
+  mos  = merge origin/staging
+  mom  = merge origin/master
+  dod  = diff origin/develop
+  dos  = diff origin/staging
+  dom  = diff origin/master
+  pod  = push origin develop
+  pos  = push origin staging
+  pom  = push origin master
+  po   = push origin
+
+  fu   = fetch upstream
+  mum  = merge upstream/master
+[color]
+  ui = auto
+  diff = auto
+  branch = auto
+  status = auto
+[diff]
+  tool = vimdiff
+[difftool]
+  prompt = false
+[push]
+  default = tracking
+[pull]
+  default = tracking
+
+[merge]
+  tool = vimdiff3
+[mergetool]
+  path = nvim
+[difftool "sourcetree"]
+  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+  path =
+[mergetool "sourcetree"]
+  cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+  trustExitCode = true

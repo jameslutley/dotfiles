@@ -1,0 +1,10 @@
+chrissicool/zsh-256color
+tmuxinator/tmuxinator
+zsh-users/zsh-history-substring-search
+zdharma/fast-syntax-highlighting
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-completions
+
+# Zsh Theme
+mafredri/zsh-async
+sindresorhus/pure
