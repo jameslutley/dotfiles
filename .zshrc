@@ -1,20 +1,74 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # —————————————————————————————————————————
 # Zsh Config
 # —————————————————————————————————————————
 
-# antibody Config
+# zinit Config
 # —————————————————————————————————————————
 
-# Loads autibody
-source <(antibody init)
+# Install zinit if no zinit is present
+if [[ ! -d ${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git ]]; then
+  print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+  ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+  mkdir -p "$(dirname $ZINIT_HOME)"
+  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME" && \
+    print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+    print -P "%F{160}▓▒░ The clone has failed.%f%b"
+else
+fi
 
-# Loads plugins
-antibody bundle < ~/.zsh_plugins.txt
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+source "${ZINIT_HOME}/zinit.zsh"
+
+zinit ice lucid wait
+zinit light zdharma-continuum/fast-syntax-highlighting
+
+zinit ice depth=1; zinit light romkatv/powerlevel10k
+zinit light sindresorhus/pure
+zinit light zsh-users/zsh-autosuggestions
+zinit light hlissner/zsh-autopair
+zinit light zsh-users/zsh-history-substring-search
+
+zinit ice lucid wait'!0a' as'null' id-as'tpm' atclone'mkdir -p $HOME/.tmux/plugins; ln -sf $ZINIT[PLUGINS_DIR]/tpm $HOME/.tmux/plugins/tpm' ; zinit light tmux-plugins/tpm
+
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+zstyle ':completion:*' auto-description 'specify: %F{magenta}%d%f'
+zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate
+zstyle ':completion:*' expand prefix suffix
+zstyle ':completion:*' file-sort name
+zstyle ':completion:*' format 'Completing %F{magenta}%d%f'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' insert-unambiguous true
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' list-suffixes true
+zstyle ':completion:*' matcher-list '' 'm:{[:lower:]}={[:upper:]} m:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=** r:|=**' 'l:|=* r:|=*'
+zstyle ':completion:*' menu select=1
+zstyle ':completion:*' original true
+zstyle ':completion:*' preserve-prefix '//[^/]##/'
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %F{blue}%p%s%f  %l
+zstyle ':completion:*' verbose true
+zstyle :compinstall filename '/home/jameslutley/.zshrc'
+autoload -Uz compinit
+compinit
+HISTFILE=~/.cache/.zhistory
+HISTSIZE=8192
+SAVEHIST=8192
+setopt autocd extendedglob nomatch notify auto_pushd
+unsetopt beep
+zmodload zsh/complist
 
 # macOS Settings
 # —————————————————————————————————————————
 
-# Fixes slow key repeat in macOS High Sierra
+# Fixes slow key repeat in macOS
 # http://marianposaceanu.com/articles/macos-sierra-upgrade-from-a-developers-perspective
 # https://discussions.apple.com/thread/7682417?start=0&tstart=0
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
@@ -24,7 +78,27 @@ defaults write NSGlobalDomain InitialKeyRepeat -int 12
 # General Zsh Settings
 # —————————————————————————————————————————
 
-export PATH="/usr/local/bin:$PATH" # Add Homebrew’s location to PATH
+# Homebrew
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="/opt/homebrew/sbin:$PATH"
+
+# rbenv
+export RBENV_ROOT=/opt/homebrew/opt/rbenv
+export PATH=$RBENV_ROOT/bin:$PATH
+eval "$(rbenv init -)"
+
+# openssl
+export PATH="/opt/homebrew/opt/openssl@1.1/bin:$PATH"
+export LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@1.1/lib/pkgconfig"
+export RUBY_CONFIGURE_OPTS="--with-openssl-dir=/opt/homebrew/opt/openssl@1.1"
+
+# python
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+export PATH="/opt/homebrew/opt/python@3.9/libexec/bin:$PATH"
+
+# composer
 export PATH="/Users/jameslutley/.composer/vendor/bin:$PATH"
 export CACHE_DIR="$HOME/.cache"
 
@@ -46,15 +120,17 @@ if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 fi
 
+# Add Homebrew GitHub API Token
+export HOMEBREW_GITHUB_API_TOKEN=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
 # Editors
 export EDITOR='nvim'
 export VISUAL='nvim'
 export PAGER='less'
 
 # Open tmux at startup
-if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
-  exec tmux
-fi
+# if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
+#   exec tmux
+# fi
 
 # Always enable colored `grep` output.
 export GREP_OPTIONS='--color=auto';
@@ -84,12 +160,17 @@ alias ssh='TERM=screen-256color ssh'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 autoload -Uz compinit && compinit
+autoload -U +X bashcompinit && bashcompinit
 
-# Add tmuxinator completions
-source ~/.bin/tmuxinator.zsh
-
-# Enable iTerm2 Shell Integration
-# source ~/.iterm2_shell_integration.zsh
+alias     g='git'
+alias    la='ls -la --human-readable'
+alias    ll='ls -l --human-readable'
+alias     m='tmux'
+alias   mux='tmuxinator'
+alias     p='python'
+alias   ssh='TERM="xterm-256color" ssh'
+alias     v='nvim'
+alias    vw='nvim -c VimwikiIndex'
 
 setopt append_history
 setopt bang_hist                # !keyword
@@ -145,16 +226,12 @@ zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-dir
 zstyle ':completion::complete:*' use-cache 1
 zstyle ':completion::complete:*' cache-path $ZSH_CACHE_DIR
 
-zstyle ':zplug:tag' depth 42
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/etc/php/7.3/bin:$PATH"
 export PATH="/usr/local/etc/php/7.3/sbin:$PATH"
 
-# asdf global version manager
-# source "$HOME/.asdf/asdf.sh"
-. $HOME/.asdf/asdf.sh
-. $HOME/.asdf/completions/asdf.bash
+# Setup rbenv in shell
+eval "$(rbenv init - zsh)"
 
-# set yarn binaries on path
-# must be below the .asdf source commands ^
-export PATH="$(yarn global bin):$PATH"
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

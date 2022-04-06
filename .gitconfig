@@ -4,7 +4,7 @@
 [core]
   editor = vim
   whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
-  excludesfile = /Users/jameslutley/.gitignore
+  excludesfile = /Users/jameslutley/.gitignore_global
 [web]
   browser = google-chrome
 [github]
@@ -40,8 +40,9 @@
   branch = auto
   status = auto
 [diff]
-  tool = vimdiff
+  tool = vimdiff3
 [difftool]
+  path = nvim
   prompt = false
 [push]
   default = tracking
