@@ -82,7 +82,7 @@ vim.opt.tabstop = 2 -- 1 tab = 2 spaces
 -- Backup files
 vim.opt.backup = true -- use backup files
 vim.opt.backupdir = HOME .. '/.local/share/nvim/backup' -- backups
-vim.opt.directory = '/.local/share/nvim/swap' -- swap files
+vim.opt.directory = HOME .. '/.local/share/nvim/swap' -- swap files
 vim.opt.swapfile = false -- do not use swap file
 vim.opt.undodir = HOME .. '/.local/share/nvim/undo' -- undo files
 vim.opt.undofile = true
